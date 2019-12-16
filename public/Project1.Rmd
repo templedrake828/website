@@ -1,0 +1,185 @@
+---
+title: "Alcohol Consumption and Liver Transplants"
+author: "Temple Davies"
+date: "10/20/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+data1 <- read.csv("~/Desktop/website/content/alcohol-consumption-per-person-us.csv")
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+### Introduction
+
+##### The two datasets I have choosen contain data on the liver transplant waiting list and average alcohol consumption in the country. The liver transplant list contains the variables age, sex, blood type, year, futime , and event that are associated with each person on the transplant list. Year was the year at which they were put onto the waiting list. "Futime" describes the amount of days passed on the waiting list until "event" happened. Event could either be death, liver transplant, withdraw, or censored. The other dataset gives the annual average alcohol consumption, in liters, per person in the United States, split into spirits, beer, and wine. This data was acquired by the National Institute on Alcohol Abuse and Alcoholism. I want to merge this data together to see what correlations, if any, are present between liver transplant needs and average alcohol consumption. I expect to see that years in which average alcohol consupmtion is larger, the number of people added to the list may increase. This topic is of interest to me because, as a biology and pre-med major, medical information and statistics is important to my school and work career.
+
+```{r}
+alc <- data1 %>%
+  select(-Entity, -Code, Year, avg_spirits = Spirits..litres.per.person., 
+         avg_beer = Beer..litres.per.person., avg_wine =Wine..litres.per.person.) %>%
+  mutate(avg_alc_consumption_for_yr = avg_spirits + avg_beer + avg_wine) %>%
+  pivot_wider(names_from = Year, values_from = avg_alc_consumption_for_yr) %>%
+  pivot_longer(cols=c(4:97), names_to = "Year", values_to = "avg_alc_consumption_for_yr") %>%
+  na.omit()
+
+data(transplant, package = "survival")
+
+tidy_transplant <- transplant %>% arrange(year) %>%
+  group_by(year,event,sex) %>%
+  summarize(avg_futime = mean(futime, na.rm=T), count = n(), avg_age = mean(age, na.rm=T)) %>%
+  pivot_wider(names_from = year, values_from = avg_futime) %>%
+  pivot_longer(cols=c(5:14), names_to = "year", values_to = "avg_futime") %>%
+  na.omit()
+  
+
+join <- tidy_transplant %>% left_join(alc, by=c("year"="Year")) %>%
+  arrange(year) %>%
+  mutate(avg_alc_consumption_for_yr = as.numeric(avg_alc_consumption_for_yr),
+         year = as.numeric(year))
+```
+
+##### I first took the alcohol consumption data and got rid or the first two variables, "Entity" and "Code", because they were all the same. I then summed across the rows to find the total average alcohol consumption for a given year. I then demonstrated my knowledge of the pivot functions because my data was already tidy.
+
+##### Next, I took the liver transplant dataset and summarized some statistic variables so it would be easier to join with the first dataset. I excluded the blood type variable from this transformed dataset because I have other categorical variables that I think can be used effectively to group data. I don't think there will be problems dropping this variable because it is not numeric, so I can't correlate it with other numeric data. I also demonstrated my knowledge of the pivot functions here.
+
+##### In the last piece of code, I joined the two datasets using a left join because I wanted to keep all the variables in the transplant dataset and add to it from the alcohol consumption dataset. I then arranged the resulting dataset by year. During the pivots, the year and avg_alc_consumption variables became characters, so I also reverted these back to their numeric forms.
+
+
+```{r}
+join %>% ungroup() %>%
+  summarize_all(n_distinct)
+```
+
+##### The above code illustrates the total number of unique counts in each column.
+
+```{r}
+join %>% filter(event == "death") %>%
+  group_by(year, avg_alc_consumption_for_yr, avg_spirits, avg_beer, avg_wine) %>%
+  summarize(count = sum(count))
+```
+
+##### The summarized data above shows the number of deaths for a given year that people joined the liver transplant list along with the average alcohol consumption that year.
+
+```{r}
+join %>% filter(event == "ltx") %>%
+  group_by(year, avg_alc_consumption_for_yr, avg_spirits, avg_beer, avg_wine) %>%
+  summarize(count = sum(count))
+```
+
+##### The summarized data above shows the number of liver transplants for a given year that people joined the liver transplant list along with the average alcohol consumption that year.
+
+```{r}
+join %>% filter(event == "withdraw") %>%
+  group_by(year, avg_alc_consumption_for_yr, avg_spirits, avg_beer, avg_wine) %>%
+  summarize(count = sum(count))
+```
+
+##### The summarized data above shows the number of withdraws for a given year that people joined the liver transplant list along with the average alcohol consumption that year.
+
+
+```{r}
+join %>% filter(event == "death", sex == "f") %>%
+  ungroup() %>%
+  select(-event,-sex) %>%
+  cor()
+```
+
+##### The resulting matrix gives the correlation between all the numeric variables for females who ended up dying while waiting on the liver transplant list. There actually seems to be be a pretty strong negative correlation between the year that these patients entered the list and the average spirit and beer consumed, as well as the overall average alcohol consumption. There also seems to be a positive correlation for average waiting time on the list and the average alcohol consumption (for all alcohols included) for the year in which patients were added to the waiting list.
+
+```{r}  
+join %>% filter(event == "death", sex == "m") %>%
+  ungroup() %>%
+  select(-event,-sex) %>%
+  cor()
+```
+
+##### The resulting matrix gives the correlation between all the numeric variables for males who ended up dying while waiting on the liver transplant list. Just as for the females who ended up dying, there seems to be a strong negative correlation between the year that these patients entered the list and the average spirit and beer consumed, as well as the overall average alcohol consumption.
+
+```{r}
+join %>% filter(event == "ltx", sex == "f") %>%
+  ungroup() %>%
+  select(-event,-sex) %>%
+  cor()
+```
+
+##### The resulting matrix gives the correlation between all the numeric variables for females who ended up getting a liver transplant. Once again, there seems to be be a pretty strong negative correlation between the year that these patients entered the list and the average spirit and beer consumed, as well as the overall average alcohol consumption. There also seems to be a negative correlation for average waiting time on the list and the average alcohol consumption (for spirits, beer, and overall) for the year in which patients were added to the waiting list.
+
+```{r}
+join %>% filter(event == "ltx", sex == "m") %>%
+  ungroup() %>%
+  select(-event,-sex) %>%
+  cor()
+```
+
+##### The resulting matrix gives the correlation between all the numeric variables for males who ended up recieving a liver on the liver transplant list. Once again, there is a strong negative correlation between the year that these patients entered the list and the average spirit and beer consumed, as well as the overall average alcohol consumption. There also seems to be a negative correlation for average waiting time on the list and the average alcohol consumption (for spirits, beer, and overall) for the year in which patients were added to the waiting list.
+
+```{r}
+library(ggplot2)
+
+join %>% ggplot(aes(x = year, y = count)) +
+  geom_point(aes(color = event, size = avg_alc_consumption_for_yr)) +
+  scale_x_continuous(breaks = c(1990,1991,1992,1993,1994,
+                              1995,1996,1997,1998,1999)) +
+  ggtitle("Relationship Between Year, Event,\nand Average Alcohol Consumption") + 
+  ylab("Count") + xlab("Year") +
+  scale_color_manual(values = c("lightblue4", "lightblue",  
+                                "lightpink", "maroon")) +
+  theme_minimal()
+```
+
+##### The purpose of this first graph is to get a visualization of how different variables may intersect. As we can see from the size of the points on the plot, average alcohol consumption in the United States decreases throughout the decade. The number of liver transplants,conversely, seems to increase. In fact, it looks as though all events tended to increase gradually throughout the decade. When liver transplants decrease in the last year of the decade, the average alcohol consumption has an apparent increase.
+
+```{r}
+cormap <- join %>% 
+  ungroup() %>%
+  select(-event, -sex) %>%
+  cor()
+
+library(reshape2)
+melted_cormap <- melt(cormap)
+
+melted_cormap %>% ggplot(aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() + 
+  theme(axis.text.x = element_text(angle=45, hjust=1)) +
+  ggtitle("Correlation Between Numeric Variables") + 
+  ylab("Variable 1") + xlab("Variable 2") +
+  scale_fill_gradient2(low = "maroon", high = "lightblue", 
+                       name = "Correlation\nValue")
+```
+
+##### This plot maps the correlation of different numeric variables in the joined dataset. This visually reconfirms that year added to the transplant list negatively correlates with the average alcohol consumption for that year. The positively correlated variables are grouped in the right corner because this is all the different averages of alcohol, so it makes sense these would have this correlation.
+
+```{r}
+join_pca <- join %>% 
+  ungroup() %>%
+  select(year, avg_futime, avg_alc_consumption_for_yr, count) %>%
+  scale %>%
+  prcomp()
+
+summary(join_pca, loadings=T)
+
+join_pca$x %>% as.data.frame %>% 
+  mutate(Event=join$event) %>%
+  ggplot(aes(PC2,PC3,col=Event)) + geom_point() +
+  scale_color_manual(values = c("lightblue4", "lightblue", 
+                                "lightpink", "maroon"))
+```
+
+##### I chose to base my principal component analysis off the four components year, average "futime" (or time on waiting list until event), average alcohol consumption for the year, and count. The summary of the PC variables shows the variablity of the data. I decided to base my plot on average alcohol consumption and average waiting time on the transplant list. Average alcohol consumption could separate liver transplant and censored events. Average waiting time on the list separated withdraw and death from liver transplant and censored.
+
+### Conclusion
+
+##### In conclusion, it seems as though my prediction was wrong. Where I initially thought that a larger average alcohol consumption for a given year would mean more people added to the liver transplant list, it makes more sense that the opposite is actually the case. When more people are being added to the liver transplant list, this means less people drinking and perhaps a greater awareness of the negative health effects of alcohol which then may be reflected in the national average alcohol consumption.
+
+
+
+
+
+

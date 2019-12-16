@@ -1,0 +1,457 @@
+---
+title: "Working Women"
+author: "Temple Davies"
+date: "11/26/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r global_options, include=FALSE}
+library(knitr)
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(tidyr)
+library(ggplot2)
+library(plotROC)
+library(glmnet)
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE, fig.align="center", fig.height=5, message=FALSE, warning=FALSE, fig.width=8, tidy.opts=list(width.cutoff=60),tidy=TRUE)
+
+data <- read.csv("~/Desktop/website/content/Workinghours.csv") %>% 
+  select(-X) %>% 
+  mutate(total_children = child5 + child13 + child17)
+```
+
+# INTRODUCTION
+
+The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The *hours* variable represents how many hours the wife works annually. The *income* variable represents the household income, not including what is made by the wife, in hundreds of dollars. The *age* variable is the age of the wife. The *education* variable indicates how many years of education the wife recieved. The numeric variables *child5*, *child13*, and *child17* give the number of children for the household between the ages of 0 to 5, 6 to 13, and 14 to 17 years, respectively. I also added a variable that gives the total number of children under 18. The *nonwhite* variable is a binary variable in which a "1" indicates being nonwhite. For the binary variables *owned* and *mortgage*, a "1" indicates that a house is owned and a house has a mortgage, respectively. The *occupation* variable is representative of the occupation of the husband given the following categories - managerial/professional (mp), sales worker/clerical/craftsman (swcc), farm-related worker (fr), or other. The last variable, *unemp*, gives the local unemployment rate as a percetange. I chose this data because I feel as though the underlying implications, which will be explored in this project, are important to femininity and will produce meaningful results as a woman.
+
+
+# PART 1: MANOVA and ANOVAs
+
+First, a one-way multivariate analysis of variance (MANOVA) is performed to determine if there is a difference in the means of any of the nine numeric variables in the data bewteen the different groups of occupation of the husbands.
+
+```{r}
+man1 <- manova(cbind(hours, income, age, education, child5, child13, 
+                   child17, total_children, unemp) ~ occupation, data = data)
+
+summary(man1, tol = 0)
+```
+
+It can be concluded that, for at least one of the numeric varaibles, the mean difference between groups within the *occupation* variable were significantly different (Pillai trace = .08, pseudo F(9, 3372) = 34.76, p < 0.0001). Thus, the null hypothesis is rejected. Next, univariate ANOVAS can be run to determine which response variables have a significant mean difference between the different occupations.
+
+```{r}
+summary.aov(man1)
+```
+
+The results from the ANOVAs show that the response variables *home*, *income*, *age*, *education*, and *unemp* seem to have significant mean differences across the *occupation* variable, so a post-hoc t-test is performed on these varaibles. This will reveal which groups within the explanatory variable are significantly different from each other.
+
+```{r}
+data %>% group_by(occupation) %>% 
+  summarize(mean(hours), mean(income), mean(age), mean(education),
+            mean(unemp))
+
+pairwise.t.test(data$hours, data$occupation, p.adj="none")
+pairwise.t.test(data$income, data$occupation, p.adj="none")
+pairwise.t.test(data$age, data$occupation, p.adj="none")
+pairwise.t.test(data$education, data$occupation, p.adj="none")
+pairwise.t.test(data$unemp, data$occupation, p.adj="none")
+```
+
+In conclusion, 1 MANOVA test, 9 ANOVA tests, and 15 post-hoc t-tests were performed for a total of 25 tests run. The probability of at least one type I error is 0.002; therefore, the Bonferroni method for controlling type I errors puts the significance level here. Adjusting for multiple comparisons, the varaibles that have significantly different means aross different occupations include *hours* (F(1, 3380) = 11.194, p < .002), *income* (F(1, 3380) = 135.2, p < .002), *age* (F(1, 3380) = 17.898, p < .002), *education* (F(1, 3380) = 210.95, p < .002), and *unemp* (F(1, 3380) = 24.208, p < .002). For the variables that were significantly different in the ANOVA, the post-hoc t-test shows which occupations significantly differed from each other using the Bonferroni method for the significant level.
+
+The assumptions of MANOVA tests are random samples, multivariate normality, equal variance, linear relaionships among dependent variables, no extreme outliers, and no multicollinearity. Most of these were likely violated by this data because there are many dependent variables.
+
+
+# PART 2: Randomization Testing
+
+For the randomization test, I will be utilizing a two-sample t-test to test the mean differnece in income for nonwhite and white individuals.
+
+  * *null hypothesis*: simulated random samples of the data do not show a significant
+    difference in average income between nonwhite and white individuals
+      + the actual mean difference is not due to chance
+  * *alternative hypothesis*: simulated random samples of data support a significant
+    difference in average income between nonwhite and white individuals
+      + the actual mean difference could be by chance
+    
+First, the actual test-statistic is calculated.
+
+```{r}
+t.test(income ~ nonwhite, data = data)
+```
+
+Using real data, there is a significant difference between the average incomes for nonwhite and white individuals (t = 16.565, df = 3380, p-value < 0.05). Next, a randomization test can be performed to determine if this is due to chance.
+
+```{r}
+data %>% group_by(nonwhite) %>%
+  summarize(means = mean(income)) %>%
+  summarize(`mean_diff:` = diff(means))
+
+
+rand_dist <- vector()
+
+for(i in 1:5000){
+  new <- data.frame(income = sample(data$income), nonwhite = data$nonwhite)
+  rand_dist[i] <- mean(new[new$nonwhite == "1",]$income) -
+    mean(new[new$nonwhite == "0",]$income)
+}
+
+mean(rand_dist < -130.7144) * 2
+```
+
+The probability of observing a mean difference as extreme as the actual mean difference of income between nonwhite and white families in this data with randomized data is 0. This can be visualized with a histogram.
+
+```{r}
+{hist(rand_dist, main="", ylab=""); abline(v = -130.7144, col="red")}
+```
+
+The histogram represents the null distribution. The abline representing the actual mean difference in income does not even appear on the histogram, indicating that no randomization of the data produced a mean difference as extreme.
+
+
+# PART 3: Linear Regression
+
+For the next model, a linear regression will be run to determine if education level and total children are significant predictors of number of hours worked by women annually. This will be run with interaction to test if one variable differs based on the level of another.
+
+```{r}
+# mean center numeric variables
+data <- data %>%
+  mutate(total_children_ct = total_children - mean(total_children, na.rm = T),
+         education_ct = education - mean(education, na.rm = T))
+
+# run linear regression
+fit <- lm(hours ~ education_ct * total_children_ct, data = data)
+summary(fit)
+```
+
+From the above linear regression model, the *intercept* can be interpreted as the average number of hours worked by a woman per year with an average education and average number of children. The *education_ct* coefficient estimate can be understood as, with each unit increase or decrease in education from the average, the average number of hours worked by a woman increases or decreases by 67.7 hours on average. Total number of children is controlled. Therefore, hours worked and education obtained by women have a direct relationship. The *total_children_ct* coefficient can similarly be understood as, with each unit increase or decrease in the total number of childern a woman has from the average, the number of hours she works decreases or increases by 122.5 hours on average. Education is controlled. Therefore, hours worked by women and the total number of children per household have an indirect relationship. The last coefficient estimate can be interpreted as the difference between the slopes of the centered *education* variable and the centered *total_children* variable.
+
+Next, a regression plot is made from the model.
+
+```{r}
+new1 <- data
+new1$total_children_ct <- mean(data$total_children_ct)
+new1$mean <- predict(fit, new1)
+new1$total_children_ct <- mean(data$total_children_ct) + sd(data$total_children_ct)
+new1$plus.sd <- predict(fit, new1)
+new1$total_children_ct <- mean(data$total_children_ct) - sd(data$total_children_ct)
+new1$minus.sd <- predict(fit, new1)
+newint <- new1 %>% 
+  select(hours, education_ct, mean, plus.sd, minus.sd) %>%
+  gather(total_children, value, - hours, - education_ct)
+
+mycols<-c("#619CFF","#F8766D","#00BA38")
+names(mycols)<-c("-1 sd","mean","+1 sd")
+mycols=as.factor(mycols)
+
+ggplot(data, aes(education_ct, hours), group = mycols) +
+  geom_point() +
+  geom_line(data = new1, aes(y = mean, color = "mean")) +
+  geom_line(data = new1, aes(y = plus.sd, color = "+1 sd")) +
+  geom_line(data = new1, aes(y = minus.sd, color = "-1 sd")) +
+  scale_color_manual(values = mycols) +
+  labs(color = "Total Number of\nChildren") +
+  xlab("Mean Centered Education Level")
+```
+
+The regression plot illustrates each individual's mean centered education level and the hours they worked. The lines represent how the average number of children a women has, as well as one standard deviation above and below this, differs among the hours she works.
+
+Assumptions are also checked.
+
+```{r}
+# linearity
+resids <- fit$residuals
+fitvals <- fit$fitted.values
+
+ggplot() + geom_point(aes(fitvals, resids)) +
+  geom_hline(yintercept = 0, col = "red")
+```
+
+The distribution of residuals around zero does not seem to be linear; therefore, this model does not meet the assumption of linearity.
+
+```{r}
+# normality
+ggplot() + geom_histogram(aes(resids), bins=20)
+
+ggplot() + geom_qq(aes(sample = resids)) +
+  geom_qq_line(aes(sample = resids))
+```
+
+The assumption of normality is violated by the extremes of the data.
+
+```{r}
+# homoskedasticity
+bptest(fit)
+```
+
+The model also fails the assumption of homoskedasticity (p-value < 0.05).
+
+The linear regression model is then recomputed with robust standard errors to help with the homoskedasticity violation.
+
+```{r}
+coeftest(fit, vcov = vcovHC(fit))
+```
+
+After adjusting for heteroskedasticity, the result of the linear regression shows that the significance did not change for any variable from the previous model. This model found that the education level a woman obtained was a significant predictor of hours worked by a woman (t = 10.966, df = 3378, p < 0.001). The total number of children a woman has is also a significant predictor of the number of hours she worked annually (t = -10.225, df = 3378, p < 0.001). The interaction between the education level a woman recieves and the number of children she has is also significant (t = -5.094, df = 3378, p < 0.001).
+
+R^2:
+
+```{r}
+# SSR / SST
+sum((fitvals  - mean(data$hours))^2) / sum((data$hours - mean(data$hours))^2)
+```
+
+The proportion of variation in the response variable that can be explained by the model is 0.071.
+
+Finally, the regression model will be run without interaction.
+
+```{r}
+# main effects
+fit <- lm(hours ~ education_ct + total_children_ct, data = data)
+summary(fit)
+```
+
+While the two predictors are still significant, the coefficient estimates are different than the previous linear regression models tested.
+
+
+# PART 4: Linear Regression with Bootstrapped SEs
+
+The same linear regression with interaction from above will be run. This time the bootstrapped standard errors will be computed.
+
+```{r}
+samp_distn <- replicate(5000, {
+ boot_dat <- data[sample(nrow(data), replace = TRUE),]
+ fit <- lm(hours ~ education_ct * total_children_ct, data = boot_dat)
+ coef(fit)
+})
+
+samp_distn <- samp_distn %>% t %>% as.data.frame
+
+# Estimated SEs
+samp_distn %>% summarize_all(sd)
+```
+
+Comparing the bootstrapped SEs to the robust SEs and the original SEs, the standard error of the intercept is slightly larger. The bootstrapped standard error of the mean centered *education* variable is slightly lower than the previous two models. The bootstrapped standard error of the mean centered *total_children* variable is slightly less than the previous two models. The bootstrapped standard error of the interaction bewteen education and total children is greater than the original SE but less than the robust SE.
+
+
+# PART 5: Logistic Regression
+
+This portion of my project will utilize logistic regression to determine if the *hours* variable and the *income* variable significantly affect the log-odds of the binary variable *owned*.
+
+```{r}
+fit <- glm(owned ~ hours + income, data=data, family = binomial(link="logit"))
+coeftest(fit)
+
+exp(-9.7637e-01)
+exp(1.3032e-04)
+exp(6.5304e-03)
+```
+
+From the above logistic regression model, the *intercept* can be interpreted as the log-odds of owning a home when the *hours* variable and the *income* variable are controlled. The odds of owning a home is 0.3767. While controlling for income, for every one unit increase in hours worked by a woman, the odds of owning a home multiply by 1.00013. While controlling for hours worked by women, for every dollar increase in income earned by the rest of the household, the odds of owning a home increase by 1.00655.
+
+The following is a confusion matrix of the above logistic regression.
+
+```{r}
+data$prob <- predict(fit, type="response")
+data$predicted <- ifelse(data$prob > .5,"0","1")
+
+table(truth = data$owned, prediction = data$predicted) %>% 
+  addmargins
+```
+
+The confusion matrix can be used to calculate accuracy, sensitivity, specificity, and precision.
+
+```{r}
+#accuracy
+(671 + 258) / 3382
+```
+
+The proportion of accurately predicted cases using the logistic regression model is 0.2747.
+
+```{r}
+# sensitivity (true positive rate)
+258 / 2303
+```
+
+Using the logistic regression model, the proportion of homes classified correctly as owned is 0.1120.
+
+```{r}
+# specificity (true negative rate)
+671 / 1079
+```
+
+The proportion of homes that were correctly identifed as not owned was 0.6219 by the logistic regression model.
+
+```{r}
+# precision (positive predicted value)
+258 / 666
+```
+
+The porportion of homes classified as owned that were is 0.3874 from the logistic regression predictions.
+
+The following plot is the density of the logg-odds by the binary variable *owned*. The gray area represents the cases that were inaccurately predicted.
+
+```{r}
+# get predicted log-odds
+data$logit <- predict(fit)
+data$outcome <- factor(data$owned,levels=c("1","0"))
+
+# plot density of log-odds
+data %>% ggplot(aes(logit, fill = outcome)) +
+  geom_density(alpha = .3) +
+  geom_vline(xintercept = 0,lty = 2)
+```
+
+The pink area represents the proportion of homes that were correctly predicted as owned. The blue area is the proportion of homes that were correctly predicted as not owned. The gray area to the right of zero is the proportion of homes that were predicted to be owned by the households, but are actually not. Similarly, the gray area to the left of zero represents the homes that were predicted to be not owned by the households, but actually were.
+
+ROC curve and AUC:
+
+```{r}
+tpr <- function(p)mean(data[data$outcome == '1',]$prob > p)
+fpr <- function(p)mean(data[data$outcome == '0',]$prob > p)
+
+data <- data[order(data$prob),]
+prob <- data$prob
+cuts <- unique(c(0,(prob[-1]+prob[-32])/2,1))
+
+TPR<-sapply(cuts,tpr)
+FPR<-sapply(cuts,fpr)
+
+ROC1 <- data.frame(cuts,TPR,FPR) %>%
+ arrange(desc(cuts))
+
+ROCplot <- ggplot(ROC1) + geom_path(aes(FPR,TPR),size=1.5) +
+  geom_segment(aes(x=0, y=0, xend=1, yend=1), lty=2) +
+  scale_x_continuous(limits = c(0,1))
+  
+ROCplot
+
+widths <- diff(ROC1$FPR) #horizontal distances
+heights <- (ROC1$TPR[-1] + ROC1$TPR[-length(ROC1$TPR)]) / 2 #avg heights
+AUC <- sum(heights*widths)
+AUC
+```
+
+After plotting an ROC, the area under the curve is 0.7516. This can be interpreted as the probability that a randomly selected person who owns a home has a higher prediction than a randomly selected person who does not own a home.
+
+10-fold CV:
+
+```{r}
+# class_diag function
+class_diag <- function(probs, truth){
+ tab <- table(factor(probs > .5, levels = c("FALSE","TRUE")), truth)
+ acc = sum(diag(tab)) / sum(tab)
+ sens = tab[2,2] / colSums(tab)[2]
+ spec = tab[1,1] / colSums(tab)[1]
+ ppv = tab[2,2] / rowSums(tab)[2]
+ if(is.numeric(truth) == FALSE & is.logical(truth) == FALSE) truth <- as.numeric(truth) - 1
+ ord <- order(probs, decreasing = TRUE)
+ probs <- probs[ord]; truth <- truth[ord]
+ TPR = cumsum(truth) / max(1,sum(truth))
+ FPR= cumsum(!truth) / max(1,sum(!truth))
+ dup <- c(probs[-1] >= probs[-length(probs)], FALSE)
+ TPR <- c(0, TPR[!dup],1); FPR < -c(0, FPR[!dup],1)
+ n <- length(TPR)
+ auc <- sum( ((TPR[-1] + TPR[-n]) / 2) * (FPR[-1] - FPR[-n]) )
+ data.frame(acc, sens, spec, ppv, auc)
+}
+
+# 10-fold CV
+set.seed(1234)
+k = 10
+
+data1 <- data[sample(nrow(data)),] #randomly order rows
+folds <- cut(seq(1:nrow(data)), breaks=k, labels=F) #create folds
+diags <- NULL
+
+for(i in 1:k){
+ ## Create training and test sets
+ train <- data1[folds!=i,]
+ test <- data1[folds==i,]
+ truth <- test$owned
+ ## Train model on training set
+ fit <- glm(owned ~ hours + income, data = train, family = "binomial")
+ probs <- predict(fit, newdata = test, type = "response")
+ ## Test model on test set (save all k results)
+ diags <- rbind(diags, class_diag(probs,truth))
+}
+
+apply(diags, 2, mean)
+```
+
+After performing a 10-fold CV, the average out-of-sample accuracy, the proportion of correctly identified cases, is 0.7217. The sensitivity, the proportion of homes that were classified as owned correctly, is 0.8849. TThe proportion of homes classified as owned that were owned, the precision, is 0.7517.
+
+
+# PART 6: LASSO regression
+
+For the last portion of the project, a LASSO regression will be run to predict hours worked by women annually from all other variables. Using a lasso regression prevents the model from overfitting to the data.
+
+```{r}
+data2 <- read.csv("~/Desktop/website/content/Workinghours.csv") %>% 
+  select(-X) %>% 
+  mutate(total_children = child5 + child13 + child17, nonwhite = factor(nonwhite),
+         owned = factor(owned), mortgage = factor(owned), occupation = factor(occupation))
+
+
+fit <- glm(hours ~ -1 + ., data = data2)
+
+set.seed(1234)
+
+x <- model.matrix(fit)
+x <- scale(x)
+y <- as.matrix(data2$hours)
+
+cv <- cv.glmnet(x, y)
+
+lasso <- glmnet(x, y, lambda = cv$lambda.1se)
+coef(cv)
+```
+
+The most important predictors of hours worked by women are icome, age, education, having children between the ages of 0 and 5, having children between the ages of 6 and 13, race, owning a house, and unemployment.
+
+10-fold CV:
+
+```{r}
+# CV for regular linear regression to find RMSE
+set.seed(1234)
+k = 10
+
+data1<-data2[sample(nrow(data2)),] #randomly order rows
+folds<-cut(seq(1:nrow(data2)), breaks = k, labels = F) #create folds
+
+diags<-NULL
+for(i in 1:k){
+ train <- data1[folds!=i,]
+ test <- data1[folds==i,]
+ 
+ fit <- lm(hours ~ ., data=train)
+ yhat <- predict(fit, newdata=test)
+ 
+ diags <- mean((test$hours - yhat)^2)
+}
+sqrt(mean(diags))
+
+# CV for LASSO regression to find RMSE
+set.seed(1234)
+k = 10
+
+data1 <- data2[sample(nrow(data2)),] #randomly order rows
+folds <- cut(seq(1:nrow(data2)), breaks=k, labels=F) #create folds
+
+diags <- NULL
+for(i in 1:k){
+ train <- data1[folds!=i,]
+ test <- data1[folds==i,]
+ 
+ fit <- lm(hours ~ income + age + education + child5 + child13 + nonwhite + owned + unemp,
+           data = train)
+ yhat <- predict(fit, newdata = test)
+ 
+ diags <- mean((test$hours - yhat)^2) 
+}
+
+sqrt(mean(diags))
+```
+
+When comparing the two models' residual standard error, the values for both RMSEs are fairly close. Therefore, they have about the same accuracy when making predictions on new data. The RMSEs are pretty fair from zero, so it can be concluded that these models may be overfitted to the original data. 

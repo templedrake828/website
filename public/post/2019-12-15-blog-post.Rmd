@@ -1,0 +1,9 @@
+---
+title: Blog Post
+author: Temple Davies
+date: '2019-12-15'
+slug: blog-post
+categories: []
+tags: []
+description: ''
+---

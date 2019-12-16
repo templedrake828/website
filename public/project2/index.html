@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Temple Davies" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Working Women</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project2/">Working Women</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level1">
+<h1>INTRODUCTION</h1>
+<p>The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The <em>hours</em> variable represents how many hours the wife works annually. The <em>income</em> variable represents the household income, not including what is made by the wife, in hundreds of dollars. The <em>age</em> variable is the age of the wife. The <em>education</em> variable indicates how many years of education the wife recieved. The numeric variables <em>child5</em>, <em>child13</em>, and <em>child17</em> give the number of children for the household between the ages of 0 to 5, 6 to 13, and 14 to 17 years, respectively. I also added a variable that gives the total number of children under 18. The <em>nonwhite</em> variable is a binary variable in which a “1” indicates being nonwhite. For the binary variables <em>owned</em> and <em>mortgage</em>, a “1” indicates that a house is owned and a house has a mortgage, respectively. The <em>occupation</em> variable is representative of the occupation of the husband given the following categories - managerial/professional (mp), sales worker/clerical/craftsman (swcc), farm-related worker (fr), or other. The last variable, <em>unemp</em>, gives the local unemployment rate as a percetange. I chose this data because I feel as though the underlying implications, which will be explored in this project, are important to femininity and will produce meaningful results as a woman.</p>
+</div>
+<div id="part-1-manova-and-anovas" class="section level1">
+<h1>PART 1: MANOVA and ANOVAs</h1>
+<p>First, a one-way multivariate analysis of variance (MANOVA) is performed to determine if there is a difference in the means of any of the nine numeric variables in the data bewteen the different groups of occupation of the husbands.</p>
+<pre class="r"><code>man1 &lt;- manova(cbind(hours, income, age, education, child5, child13, 
+                   child17, total_children, unemp) ~ occupation, data = data)
+
+summary(man1, tol = 0)</code></pre>
+<pre><code>##              Df  Pillai approx F num Df den Df    Pr(&gt;F)    
+## occupation    3 0.24361   33.113     27  10116 &lt; 2.2e-16 ***
+## Residuals  3378                                             
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>It can be concluded that, for at least one of the numeric varaibles, the mean difference between groups within the <em>occupation</em> variable were significantly different (Pillai trace = .08, pseudo F(9, 3372) = 34.76, p &lt; 0.0001). Thus, the null hypothesis is rejected. Next, univariate ANOVAS can be run to determine which response variables have a significant mean difference between the different occupations.</p>
+<pre class="r"><code>summary.aov(man1)</code></pre>
+<pre><code>##  Response hours :
+##               Df     Sum Sq Mean Sq F value    Pr(&gt;F)    
+## occupation     3   26516749 8838916  11.194 2.623e-07 ***
+## Residuals   3378 2667181633  789574                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response income :
+##               Df    Sum Sq  Mean Sq F value    Pr(&gt;F)    
+## occupation     3  30061057 10020352   135.2 &lt; 2.2e-16 ***
+## Residuals   3378 250362010    74115                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response age :
+##               Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## occupation     3   6819 2272.87  17.898 1.598e-11 ***
+## Residuals   3378 428969  126.99                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response education :
+##               Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## occupation     3  3114.1 1038.02  210.95 &lt; 2.2e-16 ***
+## Residuals   3378 16621.9    4.92                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response child5 :
+##               Df Sum Sq Mean Sq F value Pr(&gt;F)
+## occupation     3    2.2 0.73317   1.259 0.2867
+## Residuals   3378 1967.1 0.58233               
+## 
+##  Response child13 :
+##               Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## occupation     3    2.28 0.76105  1.0407 0.3733
+## Residuals   3378 2470.30 0.73129               
+## 
+##  Response child17 :
+##               Df Sum Sq Mean Sq F value Pr(&gt;F)
+## occupation     3   1.14 0.38051  1.4747 0.2194
+## Residuals   3378 871.58 0.25802               
+## 
+##  Response total_children :
+##               Df Sum Sq Mean Sq F value Pr(&gt;F)
+## occupation     3    9.2  3.0647  2.0022 0.1115
+## Residuals   3378 5170.7  1.5307               
+## 
+##  Response unemp :
+##               Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## occupation     3   377.3 125.750  24.208 1.701e-15 ***
+## Residuals   3378 17547.3   5.195                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The results from the ANOVAs show that the response variables <em>home</em>, <em>income</em>, <em>age</em>, <em>education</em>, and <em>unemp</em> seem to have significant mean differences across the <em>occupation</em> variable, so a post-hoc t-test is performed on these varaibles. This will reveal which groups within the explanatory variable are significantly different from each other.</p>
+<pre class="r"><code>data %&gt;% group_by(occupation) %&gt;% 
+  summarize(mean(hours), mean(income), mean(age), mean(education),
+            mean(unemp))</code></pre>
+<pre><code>## # A tibble: 4 x 6
+##   occupation `mean(hours)` `mean(income)` `mean(age)` `mean(education…
+##   &lt;fct&gt;              &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+## 1 fr                  868.           189.        38.2             11.7
+## 2 mp                 1208.           439.        36.7             14.0
+## 3 other              1046.           212.        38.3             11.6
+## 4 swcc               1205.           281.        34.9             12.5
+## # … with 1 more variable: `mean(unemp)` &lt;dbl&gt;</code></pre>
+<pre class="r"><code>pairwise.t.test(data$hours, data$occupation, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$hours and data$occupation 
+## 
+##       fr      mp      other  
+## mp    0.00075 -       -      
+## other 0.07438 1.8e-05 -      
+## swcc  0.00081 0.93750 1.9e-05
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$income, data$occupation, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$income and data$occupation 
+## 
+##       fr      mp      other  
+## mp    7.1e-16 -       -      
+## other 0.4490  &lt; 2e-16 -      
+## swcc  0.0028  &lt; 2e-16 1.4e-09
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$age, data$occupation, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$age and data$occupation 
+## 
+##       fr      mp      other  
+## mp    0.25188 -       -      
+## other 0.92783 0.00099 -      
+## swcc  0.00979 0.00031 5.6e-13
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$education, data$occupation, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$education and data$occupation 
+## 
+##       fr     mp     other 
+## mp    &lt;2e-16 -      -     
+## other 0.7990 &lt;2e-16 -     
+## swcc  0.0018 &lt;2e-16 &lt;2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$unemp, data$occupation, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  data$unemp and data$occupation 
+## 
+##       fr    mp      other  
+## mp    0.076 -       -      
+## other 0.152 &lt; 2e-16 -      
+## swcc  0.934 2.1e-05 4.9e-05
+## 
+## P value adjustment method: none</code></pre>
+<p>In conclusion, 1 MANOVA test, 9 ANOVA tests, and 15 post-hoc t-tests were performed for a total of 25 tests run. The probability of at least one type I error is 0.002; therefore, the Bonferroni method for controlling type I errors puts the significance level here. Adjusting for multiple comparisons, the varaibles that have significantly different means aross different occupations include <em>hours</em> (F(1, 3380) = 11.194, p &lt; .002), <em>income</em> (F(1, 3380) = 135.2, p &lt; .002), <em>age</em> (F(1, 3380) = 17.898, p &lt; .002), <em>education</em> (F(1, 3380) = 210.95, p &lt; .002), and <em>unemp</em> (F(1, 3380) = 24.208, p &lt; .002). For the variables that were significantly different in the ANOVA, the post-hoc t-test shows which occupations significantly differed from each other using the Bonferroni method for the significant level.</p>
+<p>The assumptions of MANOVA tests are random samples, multivariate normality, equal variance, linear relaionships among dependent variables, no extreme outliers, and no multicollinearity. Most of these were likely violated by this data because there are many dependent variables.</p>
+</div>
+<div id="part-2-randomization-testing" class="section level1">
+<h1>PART 2: Randomization Testing</h1>
+<p>For the randomization test, I will be utilizing a two-sample t-test to test the mean differnece in income for nonwhite and white individuals.</p>
+<ul>
+<li><em>null hypothesis</em>: simulated random samples of the data do not show a significant
+difference in average income between nonwhite and white individuals
+<ul>
+<li>the actual mean difference is not due to chance</li>
+</ul></li>
+<li><em>alternative hypothesis</em>: simulated random samples of data support a significant
+difference in average income between nonwhite and white individuals
+<ul>
+<li>the actual mean difference could be by chance</li>
+</ul></li>
+</ul>
+<p>First, the actual test-statistic is calculated.</p>
+<pre class="r"><code>t.test(income ~ nonwhite, data = data)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  income by nonwhite
+## t = 16.565, df = 3379.7, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  115.2428 146.1861
+## sample estimates:
+## mean in group 0 mean in group 1 
+##        335.5474        204.8330</code></pre>
+<p>Using real data, there is a significant difference between the average incomes for nonwhite and white individuals (t = 16.565, df = 3380, p-value &lt; 0.05). Next, a randomization test can be performed to determine if this is due to chance.</p>
+<pre class="r"><code>data %&gt;% group_by(nonwhite) %&gt;%
+  summarize(means = mean(income)) %&gt;%
+  summarize(`mean_diff:` = diff(means))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `mean_diff:`
+##          &lt;dbl&gt;
+## 1        -131.</code></pre>
+<pre class="r"><code>rand_dist &lt;- vector()
+
+for(i in 1:5000){
+  new &lt;- data.frame(income = sample(data$income), nonwhite = data$nonwhite)
+  rand_dist[i] &lt;- mean(new[new$nonwhite == &quot;1&quot;,]$income) -
+    mean(new[new$nonwhite == &quot;0&quot;,]$income)
+}
+
+mean(rand_dist &lt; -130.7144) * 2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>The probability of observing a mean difference as extreme as the actual mean difference of income between nonwhite and white families in this data with randomized data is 0. This can be visualized with a histogram.</p>
+<pre class="r"><code>{hist(rand_dist, main=&quot;&quot;, ylab=&quot;&quot;); abline(v = -130.7144, col=&quot;red&quot;)}</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The histogram represents the null distribution. The abline representing the actual mean difference in income does not even appear on the histogram, indicating that no randomization of the data produced a mean difference as extreme.</p>
+</div>
+<div id="part-3-linear-regression" class="section level1">
+<h1>PART 3: Linear Regression</h1>
+<p>For the next model, a linear regression will be run to determine if education level and total children are significant predictors of number of hours worked by women annually. This will be run with interaction to test if one variable differs based on the level of another.</p>
+<pre class="r"><code># mean center numeric variables
+data &lt;- data %&gt;%
+  mutate(total_children_ct = total_children - mean(total_children, na.rm = T),
+         education_ct = education - mean(education, na.rm = T))
+
+# run linear regression
+fit &lt;- lm(hours ~ education_ct * total_children_ct, data = data)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = hours ~ education_ct * total_children_ct, data = data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1741.2  -872.6   130.1   751.3  4786.9 
+## 
+## Coefficients:
+##                                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                    1134.892     14.797  76.696  &lt; 2e-16 ***
+## education_ct                     67.697      6.171  10.971  &lt; 2e-16 ***
+## total_children_ct              -122.453     12.037 -10.173  &lt; 2e-16 ***
+## education_ct:total_children_ct  -25.925      4.856  -5.338 9.99e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 860.5 on 3378 degrees of freedom
+## Multiple R-squared:  0.07141,    Adjusted R-squared:  0.07058 
+## F-statistic: 86.59 on 3 and 3378 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>From the above linear regression model, the <em>intercept</em> can be interpreted as the average number of hours worked by a woman per year with an average education and average number of children. The <em>education_ct</em> coefficient estimate can be understood as, with each unit increase or decrease in education from the average, the average number of hours worked by a woman increases or decreases by 67.7 hours on average. Total number of children is controlled. Therefore, hours worked and education obtained by women have a direct relationship. The <em>total_children_ct</em> coefficient can similarly be understood as, with each unit increase or decrease in the total number of childern a woman has from the average, the number of hours she works decreases or increases by 122.5 hours on average. Education is controlled. Therefore, hours worked by women and the total number of children per household have an indirect relationship. The last coefficient estimate can be interpreted as the difference between the slopes of the centered <em>education</em> variable and the centered <em>total_children</em> variable.</p>
+<p>Next, a regression plot is made from the model.</p>
+<pre class="r"><code>new1 &lt;- data
+new1$total_children_ct &lt;- mean(data$total_children_ct)
+new1$mean &lt;- predict(fit, new1)
+new1$total_children_ct &lt;- mean(data$total_children_ct) + sd(data$total_children_ct)
+new1$plus.sd &lt;- predict(fit, new1)
+new1$total_children_ct &lt;- mean(data$total_children_ct) - sd(data$total_children_ct)
+new1$minus.sd &lt;- predict(fit, new1)
+newint &lt;- new1 %&gt;% 
+  select(hours, education_ct, mean, plus.sd, minus.sd) %&gt;%
+  gather(total_children, value, - hours, - education_ct)
+
+mycols&lt;-c(&quot;#619CFF&quot;,&quot;#F8766D&quot;,&quot;#00BA38&quot;)
+names(mycols)&lt;-c(&quot;-1 sd&quot;,&quot;mean&quot;,&quot;+1 sd&quot;)
+mycols=as.factor(mycols)
+
+ggplot(data, aes(education_ct, hours), group = mycols) +
+  geom_point() +
+  geom_line(data = new1, aes(y = mean, color = &quot;mean&quot;)) +
+  geom_line(data = new1, aes(y = plus.sd, color = &quot;+1 sd&quot;)) +
+  geom_line(data = new1, aes(y = minus.sd, color = &quot;-1 sd&quot;)) +
+  scale_color_manual(values = mycols) +
+  labs(color = &quot;Total Number of\nChildren&quot;) +
+  xlab(&quot;Mean Centered Education Level&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-8-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The regression plot illustrates each individual’s mean centered education level and the hours they worked. The lines represent how the average number of children a women has, as well as one standard deviation above and below this, differs among the hours she works.</p>
+<p>Assumptions are also checked.</p>
+<pre class="r"><code># linearity
+resids &lt;- fit$residuals
+fitvals &lt;- fit$fitted.values
+
+ggplot() + geom_point(aes(fitvals, resids)) +
+  geom_hline(yintercept = 0, col = &quot;red&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-9-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The distribution of residuals around zero does not seem to be linear; therefore, this model does not meet the assumption of linearity.</p>
+<pre class="r"><code># normality
+ggplot() + geom_histogram(aes(resids), bins=20)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot() + geom_qq(aes(sample = resids)) +
+  geom_qq_line(aes(sample = resids))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-10-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The assumption of normality is violated by the extremes of the data.</p>
+<pre class="r"><code># homoskedasticity
+bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 15.379, df = 3, p-value = 0.001519</code></pre>
+<p>The model also fails the assumption of homoskedasticity (p-value &lt; 0.05).</p>
+<p>The linear regression model is then recomputed with robust standard errors to help with the homoskedasticity violation.</p>
+<pre class="r"><code>coeftest(fit, vcov = vcovHC(fit))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                                 Estimate Std. Error  t value  Pr(&gt;|t|)    
+## (Intercept)                    1134.8918    14.8106  76.6269 &lt; 2.2e-16 ***
+## education_ct                     67.6972     6.1733  10.9662 &lt; 2.2e-16 ***
+## total_children_ct              -122.4531    11.9765 -10.2245 &lt; 2.2e-16 ***
+## education_ct:total_children_ct  -25.9253     5.0890  -5.0944  3.69e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>After adjusting for heteroskedasticity, the result of the linear regression shows that the significance did not change for any variable from the previous model. This model found that the education level a woman obtained was a significant predictor of hours worked by a woman (t = 10.966, df = 3378, p &lt; 0.001). The total number of children a woman has is also a significant predictor of the number of hours she worked annually (t = -10.225, df = 3378, p &lt; 0.001). The interaction between the education level a woman recieves and the number of children she has is also significant (t = -5.094, df = 3378, p &lt; 0.001).</p>
+<p>R^2:</p>
+<pre class="r"><code># SSR / SST
+sum((fitvals  - mean(data$hours))^2) / sum((data$hours - mean(data$hours))^2)</code></pre>
+<pre><code>## [1] 0.07140761</code></pre>
+<p>The proportion of variation in the response variable that can be explained by the model is 0.071.</p>
+<p>Finally, the regression model will be run without interaction.</p>
+<pre class="r"><code># main effects
+fit &lt;- lm(hours ~ education_ct + total_children_ct, data = data)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = hours ~ education_ct + total_children_ct, data = data)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1602.0  -885.2   136.7   748.3  4783.2 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        1135.48      14.86  76.427   &lt;2e-16 ***
+## education_ct         71.68       6.15  11.655   &lt;2e-16 ***
+## total_children_ct  -115.06      12.01  -9.584   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 864 on 3379 degrees of freedom
+## Multiple R-squared:  0.06357,    Adjusted R-squared:  0.06302 
+## F-statistic: 114.7 on 2 and 3379 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>While the two predictors are still significant, the coefficient estimates are different than the previous linear regression models tested.</p>
+</div>
+<div id="part-4-linear-regression-with-bootstrapped-ses" class="section level1">
+<h1>PART 4: Linear Regression with Bootstrapped SEs</h1>
+<p>The same linear regression with interaction from above will be run. This time the bootstrapped standard errors will be computed.</p>
+<pre class="r"><code>samp_distn &lt;- replicate(5000, {
+ boot_dat &lt;- data[sample(nrow(data), replace = TRUE),]
+ fit &lt;- lm(hours ~ education_ct * total_children_ct, data = boot_dat)
+ coef(fit)
+})
+
+samp_distn &lt;- samp_distn %&gt;% t %&gt;% as.data.frame
+
+# Estimated SEs
+samp_distn %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) education_ct total_children_ct education_ct:total_children_ct
+## 1    14.52797     6.159567           11.8729                        5.09782</code></pre>
+<p>Comparing the bootstrapped SEs to the robust SEs and the original SEs, the standard error of the intercept is slightly larger. The bootstrapped standard error of the mean centered <em>education</em> variable is slightly lower than the previous two models. The bootstrapped standard error of the mean centered <em>total_children</em> variable is slightly less than the previous two models. The bootstrapped standard error of the interaction bewteen education and total children is greater than the original SE but less than the robust SE.</p>
+</div>
+<div id="part-5-logistic-regression" class="section level1">
+<h1>PART 5: Logistic Regression</h1>
+<p>This portion of my project will utilize logistic regression to determine if the <em>hours</em> variable and the <em>income</em> variable significantly affect the log-odds of the binary variable <em>owned</em>.</p>
+<pre class="r"><code>fit &lt;- glm(owned ~ hours + income, data=data, family = binomial(link=&quot;logit&quot;))
+coeftest(fit)</code></pre>
+<pre><code>## 
+## z test of coefficients:
+## 
+##                Estimate  Std. Error z value  Pr(&gt;|z|)    
+## (Intercept) -9.7637e-01  9.7836e-02 -9.9796 &lt; 2.2e-16 ***
+## hours        1.3032e-04  4.5288e-05  2.8775  0.004008 ** 
+## income       6.5304e-03  3.3367e-04 19.5714 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>exp(-9.7637e-01)</code></pre>
+<pre><code>## [1] 0.376676</code></pre>
+<pre class="r"><code>exp(1.3032e-04)</code></pre>
+<pre><code>## [1] 1.00013</code></pre>
+<pre class="r"><code>exp(6.5304e-03)</code></pre>
+<pre><code>## [1] 1.006552</code></pre>
+<p>From the above logistic regression model, the <em>intercept</em> can be interpreted as the log-odds of owning a home when the <em>hours</em> variable and the <em>income</em> variable are controlled. The odds of owning a home is 0.3767. While controlling for income, for every one unit increase in hours worked by a woman, the odds of owning a home multiply by 1.00013. While controlling for hours worked by women, for every dollar increase in income earned by the rest of the household, the odds of owning a home increase by 1.00655.</p>
+<p>The following is a confusion matrix of the above logistic regression.</p>
+<pre class="r"><code>data$prob &lt;- predict(fit, type=&quot;response&quot;)
+data$predicted &lt;- ifelse(data$prob &gt; .5,&quot;0&quot;,&quot;1&quot;)
+
+table(truth = data$owned, prediction = data$predicted) %&gt;% 
+  addmargins</code></pre>
+<pre><code>##      prediction
+## truth    0    1  Sum
+##   0    671  408 1079
+##   1   2045  258 2303
+##   Sum 2716  666 3382</code></pre>
+<p>The confusion matrix can be used to calculate accuracy, sensitivity, specificity, and precision.</p>
+<pre class="r"><code>#accuracy
+(671 + 258) / 3382</code></pre>
+<pre><code>## [1] 0.2746895</code></pre>
+<p>The proportion of accurately predicted cases using the logistic regression model is 0.2747.</p>
+<pre class="r"><code># sensitivity (true positive rate)
+258 / 2303</code></pre>
+<pre><code>## [1] 0.1120278</code></pre>
+<p>Using the logistic regression model, the proportion of homes classified correctly as owned is 0.1120.</p>
+<pre class="r"><code># specificity (true negative rate)
+671 / 1079</code></pre>
+<pre><code>## [1] 0.6218721</code></pre>
+<p>The proportion of homes that were correctly identifed as not owned was 0.6219 by the logistic regression model.</p>
+<pre class="r"><code># precision (positive predicted value)
+258 / 666</code></pre>
+<pre><code>## [1] 0.3873874</code></pre>
+<p>The porportion of homes classified as owned that were is 0.3874 from the logistic regression predictions.</p>
+<p>The following plot is the density of the logg-odds by the binary variable <em>owned</em>. The gray area represents the cases that were inaccurately predicted.</p>
+<pre class="r"><code># get predicted log-odds
+data$logit &lt;- predict(fit)
+data$outcome &lt;- factor(data$owned,levels=c(&quot;1&quot;,&quot;0&quot;))
+
+# plot density of log-odds
+data %&gt;% ggplot(aes(logit, fill = outcome)) +
+  geom_density(alpha = .3) +
+  geom_vline(xintercept = 0,lty = 2)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-22-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The pink area represents the proportion of homes that were correctly predicted as owned. The blue area is the proportion of homes that were correctly predicted as not owned. The gray area to the right of zero is the proportion of homes that were predicted to be owned by the households, but are actually not. Similarly, the gray area to the left of zero represents the homes that were predicted to be not owned by the households, but actually were.</p>
+<p>ROC curve and AUC:</p>
+<pre class="r"><code>tpr &lt;- function(p)mean(data[data$outcome == &#39;1&#39;,]$prob &gt; p)
+fpr &lt;- function(p)mean(data[data$outcome == &#39;0&#39;,]$prob &gt; p)
+
+data &lt;- data[order(data$prob),]
+prob &lt;- data$prob
+cuts &lt;- unique(c(0,(prob[-1]+prob[-32])/2,1))
+
+TPR&lt;-sapply(cuts,tpr)
+FPR&lt;-sapply(cuts,fpr)
+
+ROC1 &lt;- data.frame(cuts,TPR,FPR) %&gt;%
+ arrange(desc(cuts))
+
+ROCplot &lt;- ggplot(ROC1) + geom_path(aes(FPR,TPR),size=1.5) +
+  geom_segment(aes(x=0, y=0, xend=1, yend=1), lty=2) +
+  scale_x_continuous(limits = c(0,1))
+  
+ROCplot</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-23-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>widths &lt;- diff(ROC1$FPR) #horizontal distances
+heights &lt;- (ROC1$TPR[-1] + ROC1$TPR[-length(ROC1$TPR)]) / 2 #avg heights
+AUC &lt;- sum(heights*widths)
+AUC</code></pre>
+<pre><code>## [1] 0.7516341</code></pre>
+<p>After plotting an ROC, the area under the curve is 0.7516. This can be interpreted as the probability that a randomly selected person who owns a home has a higher prediction than a randomly selected person who does not own a home.</p>
+<p>10-fold CV:</p>
+<pre class="r"><code># class_diag function
+class_diag &lt;- function(probs, truth){
+ tab &lt;- table(factor(probs &gt; .5, levels = c(&quot;FALSE&quot;,&quot;TRUE&quot;)), truth)
+ acc = sum(diag(tab)) / sum(tab)
+ sens = tab[2,2] / colSums(tab)[2]
+ spec = tab[1,1] / colSums(tab)[1]
+ ppv = tab[2,2] / rowSums(tab)[2]
+ if(is.numeric(truth) == FALSE &amp; is.logical(truth) == FALSE) truth &lt;- as.numeric(truth) - 1
+ ord &lt;- order(probs, decreasing = TRUE)
+ probs &lt;- probs[ord]; truth &lt;- truth[ord]
+ TPR = cumsum(truth) / max(1,sum(truth))
+ FPR= cumsum(!truth) / max(1,sum(!truth))
+ dup &lt;- c(probs[-1] &gt;= probs[-length(probs)], FALSE)
+ TPR &lt;- c(0, TPR[!dup],1); FPR &lt; -c(0, FPR[!dup],1)
+ n &lt;- length(TPR)
+ auc &lt;- sum( ((TPR[-1] + TPR[-n]) / 2) * (FPR[-1] - FPR[-n]) )
+ data.frame(acc, sens, spec, ppv, auc)
+}
+
+# 10-fold CV
+set.seed(1234)
+k = 10
+
+data1 &lt;- data[sample(nrow(data)),] #randomly order rows
+folds &lt;- cut(seq(1:nrow(data)), breaks=k, labels=F) #create folds
+diags &lt;- NULL
+
+for(i in 1:k){
+ ## Create training and test sets
+ train &lt;- data1[folds!=i,]
+ test &lt;- data1[folds==i,]
+ truth &lt;- test$owned
+ ## Train model on training set
+ fit &lt;- glm(owned ~ hours + income, data = train, family = &quot;binomial&quot;)
+ probs &lt;- predict(fit, newdata = test, type = &quot;response&quot;)
+ ## Test model on test set (save all k results)
+ diags &lt;- rbind(diags, class_diag(probs,truth))
+}
+
+apply(diags, 2, mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7235421 0.8846706 0.3803301 0.7530689 0.7151446</code></pre>
+<p>After performing a 10-fold CV, the average out-of-sample accuracy, the proportion of correctly identified cases, is 0.7217. The sensitivity, the proportion of homes that were classified as owned correctly, is 0.8849. TThe proportion of homes classified as owned that were owned, the precision, is 0.7517.</p>
+</div>
+<div id="part-6-lasso-regression" class="section level1">
+<h1>PART 6: LASSO regression</h1>
+<p>For the last portion of the project, a LASSO regression will be run to predict hours worked by women annually from all other variables. Using a lasso regression prevents the model from overfitting to the data.</p>
+<pre class="r"><code>data2 &lt;- read.csv(&quot;~/Desktop/website/content/Workinghours.csv&quot;) %&gt;% 
+  select(-X) %&gt;% 
+  mutate(total_children = child5 + child13 + child17, nonwhite = factor(nonwhite),
+         owned = factor(owned), mortgage = factor(owned), occupation = factor(occupation))
+
+
+fit &lt;- glm(hours ~ -1 + ., data = data2)
+
+set.seed(1234)
+
+x &lt;- model.matrix(fit)
+x &lt;- scale(x)
+y &lt;- as.matrix(data2$hours)
+
+cv &lt;- cv.glmnet(x, y)
+
+lasso &lt;- glmnet(x, y, lambda = cv$lambda.1se)
+coef(cv)</code></pre>
+<pre><code>## 16 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                             1
+## (Intercept)      1.135479e+03
+## income          -6.895253e+01
+## age             -1.642888e+02
+## education        1.322918e+02
+## child5          -2.201777e+02
+## child13         -3.758011e+01
+## child17          .           
+## nonwhite0       -3.963244e+00
+## nonwhite1        4.583253e-13
+## owned1           1.351275e+01
+## mortgage1        .           
+## occupationmp     .           
+## occupationother  .           
+## occupationswcc   .           
+## unemp           -2.298602e+01
+## total_children  -1.070120e+01</code></pre>
+<p>The most important predictors of hours worked by women are icome, age, education, having children between the ages of 0 and 5, having children between the ages of 6 and 13, race, owning a house, and unemployment.</p>
+<p>10-fold CV:</p>
+<pre class="r"><code># CV for regular linear regression to find RMSE
+set.seed(1234)
+k = 10
+
+data1&lt;-data2[sample(nrow(data2)),] #randomly order rows
+folds&lt;-cut(seq(1:nrow(data2)), breaks = k, labels = F) #create folds
+
+diags&lt;-NULL
+for(i in 1:k){
+ train &lt;- data1[folds!=i,]
+ test &lt;- data1[folds==i,]
+ 
+ fit &lt;- lm(hours ~ ., data=train)
+ yhat &lt;- predict(fit, newdata=test)
+ 
+ diags &lt;- mean((test$hours - yhat)^2)
+}
+sqrt(mean(diags))</code></pre>
+<pre><code>## [1] 836.1012</code></pre>
+<pre class="r"><code># CV for LASSO regression to find RMSE
+set.seed(1234)
+k = 10
+
+data1 &lt;- data2[sample(nrow(data2)),] #randomly order rows
+folds &lt;- cut(seq(1:nrow(data2)), breaks=k, labels=F) #create folds
+
+diags &lt;- NULL
+for(i in 1:k){
+ train &lt;- data1[folds!=i,]
+ test &lt;- data1[folds==i,]
+ 
+ fit &lt;- lm(hours ~ income + age + education + child5 + child13 + nonwhite + owned + unemp,
+           data = train)
+ yhat &lt;- predict(fit, newdata = test)
+ 
+ diags &lt;- mean((test$hours - yhat)^2) 
+}
+
+sqrt(mean(diags))</code></pre>
+<pre><code>## [1] 835.4675</code></pre>
+<p>When comparing the two models’ residual standard error, the values for both RMSEs are fairly close. Therefore, they have about the same accuracy when making predictions on new data. The RMSEs are pretty fair from zero, so it can be concluded that these models may be overfitted to the original data.</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

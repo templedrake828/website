@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Temple Davies</title>
+    <link>/</link>
+    <description>Recent content on Temple Davies</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>
+      
+      <guid>/projects/</guid>
+      <description>Projects Here are some projects I have been working on:
+  Computational Biology Project 1: Data Wrangling and Exploratory Analysis
+  Computational Biology Project 2: Modeling, Inference, Prediction
+  </description>
+    </item>
+    
+    <item>
+      <title>Alcohol Consumption and Liver Transplants</title>
+      <link>/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project1/</guid>
+      <description>library(dplyr) ## ## Attaching package: &amp;#39;dplyr&amp;#39; ## The following objects are masked from &amp;#39;package:stats&amp;#39;: ## ## filter, lag ## The following objects are masked from &amp;#39;package:base&amp;#39;: ## ## intersect, setdiff, setequal, union library(tidyverse) ## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.1.3 ✓ stringr 1.4.0 ## ✓ tidyr 1.0.0 ✓ forcats 0.4.0 ## ✓ readr 1.3.1 ## Warning: package &amp;#39;readr&amp;#39; was built under R version 3.</description>
+    </item>
+    
+    <item>
+      <title>Working Women</title>
+      <link>/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project2/</guid>
+      <description>INTRODUCTION The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The hours variable represents how many hours the wife works annually. The income variable represents the household income, not including what is made by the wife, in hundreds of dollars. The age variable is the age of the wife. The education variable indicates how many years of education the wife recieved.</description>
+    </item>
+    
+  </channel>
+</rss>
