@@ -11,6 +11,6 @@ title: Projects
 
 Here are some projects I have been working on:
 
-- [Computational Biology Project 1](/Project1.Rmd): *Data Wrangling and Exploratory Analysis*
+- [Computational Biology Project 1](/Project1): *Data Wrangling and Exploratory Analysis*
 
-- [Computational Biology Project 2](/Project2.Rmd): *Modeling, Inference, Prediction*
+- [Computational Biology Project 2](/Project2): *Modeling, Inference, Prediction*
