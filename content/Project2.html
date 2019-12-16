@@ -10,7 +10,7 @@ output:
 
 
 <div id="introduction" class="section level1">
-<h1>INTRODUCTION</h1>
+<h1>Introduction</h1>
 <p>The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The <em>hours</em> variable represents how many hours the wife works annually. The <em>income</em> variable represents the household income, not including what is made by the wife, in hundreds of dollars. The <em>age</em> variable is the age of the wife. The <em>education</em> variable indicates how many years of education the wife recieved. The numeric variables <em>child5</em>, <em>child13</em>, and <em>child17</em> give the number of children for the household between the ages of 0 to 5, 6 to 13, and 14 to 17 years, respectively. I also added a variable that gives the total number of children under 18. The <em>nonwhite</em> variable is a binary variable in which a “1” indicates being nonwhite. For the binary variables <em>owned</em> and <em>mortgage</em>, a “1” indicates that a house is owned and a house has a mortgage, respectively. The <em>occupation</em> variable is representative of the occupation of the husband given the following categories - managerial/professional (mp), sales worker/clerical/craftsman (swcc), farm-related worker (fr), or other. The last variable, <em>unemp</em>, gives the local unemployment rate as a percetange. I chose this data because I feel as though the underlying implications, which will be explored in this project, are important to femininity and will produce meaningful results as a woman.</p>
 </div>
 <div id="part-1-manova-and-anovas" class="section level1">
@@ -346,7 +346,7 @@ samp_distn &lt;- samp_distn %&gt;% t %&gt;% as.data.frame
 # Estimated SEs
 samp_distn %&gt;% summarize_all(sd)</code></pre>
 <pre><code>##   (Intercept) education_ct total_children_ct education_ct:total_children_ct
-## 1    14.52797     6.159567           11.8729                        5.09782</code></pre>
+## 1    14.84353       6.1735          12.13644                       5.062779</code></pre>
 <p>Comparing the bootstrapped SEs to the robust SEs and the original SEs, the standard error of the intercept is slightly larger. The bootstrapped standard error of the mean centered <em>education</em> variable is slightly lower than the previous two models. The bootstrapped standard error of the mean centered <em>total_children</em> variable is slightly less than the previous two models. The bootstrapped standard error of the interaction bewteen education and total children is greater than the original SE but less than the robust SE.</p>
 </div>
 <div id="part-5-logistic-regression" class="section level1">

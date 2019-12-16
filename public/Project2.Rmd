@@ -24,7 +24,7 @@ data <- read.csv("~/Desktop/website/content/Workinghours.csv") %>%
   mutate(total_children = child5 + child13 + child17)
 ```
 
-# INTRODUCTION
+# Introduction
 
 The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The *hours* variable represents how many hours the wife works annually. The *income* variable represents the household income, not including what is made by the wife, in hundreds of dollars. The *age* variable is the age of the wife. The *education* variable indicates how many years of education the wife recieved. The numeric variables *child5*, *child13*, and *child17* give the number of children for the household between the ages of 0 to 5, 6 to 13, and 14 to 17 years, respectively. I also added a variable that gives the total number of children under 18. The *nonwhite* variable is a binary variable in which a "1" indicates being nonwhite. For the binary variables *owned* and *mortgage*, a "1" indicates that a house is owned and a house has a mortgage, respectively. The *occupation* variable is representative of the occupation of the husband given the following categories - managerial/professional (mp), sales worker/clerical/craftsman (swcc), farm-related worker (fr), or other. The last variable, *unemp*, gives the local unemployment rate as a percetange. I chose this data because I feel as though the underlying implications, which will be explored in this project, are important to femininity and will produce meaningful results as a woman.
 

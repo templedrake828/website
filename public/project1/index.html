@@ -72,27 +72,8 @@
               
 
 
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
-## ✓ tibble  2.1.3     ✓ stringr 1.4.0
-## ✓ tidyr   1.0.0     ✓ forcats 0.4.0
-## ✓ readr   1.3.1</code></pre>
-<pre><code>## Warning: package &#39;readr&#39; was built under R version 3.4.4</code></pre>
-<pre><code>## Warning: package &#39;stringr&#39; was built under R version 3.4.4</code></pre>
-<pre><code>## Warning: package &#39;forcats&#39; was built under R version 3.4.4</code></pre>
-<pre><code>## ── Conflicts ─────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(dplyr)
+library(tidyverse)</code></pre>
 <div id="introduction" class="section level3">
 <h3>Introduction</h3>
 <div id="the-two-datasets-i-have-choosen-contain-data-on-the-liver-transplant-waiting-list-and-average-alcohol-consumption-in-the-country.-the-liver-transplant-list-contains-the-variables-age-sex-blood-type-year-futime-and-event-that-are-associated-with-each-person-on-the-transplant-list.-year-was-the-year-at-which-they-were-put-onto-the-waiting-list.-futime-describes-the-amount-of-days-passed-on-the-waiting-list-until-event-happened.-event-could-either-be-death-liver-transplant-withdraw-or-censored.-the-other-dataset-gives-the-annual-average-alcohol-consumption-in-liters-per-person-in-the-united-states-split-into-spirits-beer-and-wine.-this-data-was-acquired-by-the-national-institute-on-alcohol-abuse-and-alcoholism.-i-want-to-merge-this-data-together-to-see-what-correlations-if-any-are-present-between-liver-transplant-needs-and-average-alcohol-consumption.-i-expect-to-see-that-years-in-which-average-alcohol-consupmtion-is-larger-the-number-of-people-added-to-the-list-may-increase.-this-topic-is-of-interest-to-me-because-as-a-biology-and-pre-med-major-medical-information-and-statistics-is-important-to-my-school-and-work-career." class="section level5">
@@ -343,7 +324,7 @@ join %&gt;% ggplot(aes(x = year, y = count)) +
   scale_color_manual(values = c(&quot;lightblue4&quot;, &quot;lightblue&quot;,  
                                 &quot;lightpink&quot;, &quot;maroon&quot;)) +
   theme_minimal()</code></pre>
-<p><img src="/Project1_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-11-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 <div id="the-purpose-of-this-first-graph-is-to-get-a-visualization-of-how-different-variables-may-intersect.-as-we-can-see-from-the-size-of-the-points-on-the-plot-average-alcohol-consumption-in-the-united-states-decreases-throughout-the-decade.-the-number-of-liver-transplantsconversely-seems-to-increase.-in-fact-it-looks-as-though-all-events-tended-to-increase-gradually-throughout-the-decade.-when-liver-transplants-decrease-in-the-last-year-of-the-decade-the-average-alcohol-consumption-has-an-apparent-increase." class="section level5">
 <h5>The purpose of this first graph is to get a visualization of how different variables may intersect. As we can see from the size of the points on the plot, average alcohol consumption in the United States decreases throughout the decade. The number of liver transplants,conversely, seems to increase. In fact, it looks as though all events tended to increase gradually throughout the decade. When liver transplants decrease in the last year of the decade, the average alcohol consumption has an apparent increase.</h5>
@@ -352,13 +333,8 @@ join %&gt;% ggplot(aes(x = year, y = count)) +
   select(-event, -sex) %&gt;%
   cor()
 
-library(reshape2)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;reshape2&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     smiths</code></pre>
-<pre class="r"><code>melted_cormap &lt;- melt(cormap)
+library(reshape2)
+melted_cormap &lt;- melt(cormap)
 
 melted_cormap %&gt;% ggplot(aes(x=Var1, y=Var2, fill=value)) + 
   geom_tile() + 
@@ -367,7 +343,7 @@ melted_cormap %&gt;% ggplot(aes(x=Var1, y=Var2, fill=value)) +
   ylab(&quot;Variable 1&quot;) + xlab(&quot;Variable 2&quot;) +
   scale_fill_gradient2(low = &quot;maroon&quot;, high = &quot;lightblue&quot;, 
                        name = &quot;Correlation\nValue&quot;)</code></pre>
-<p><img src="/Project1_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 <div id="this-plot-maps-the-correlation-of-different-numeric-variables-in-the-joined-dataset.-this-visually-reconfirms-that-year-added-to-the-transplant-list-negatively-correlates-with-the-average-alcohol-consumption-for-that-year.-the-positively-correlated-variables-are-grouped-in-the-right-corner-because-this-is-all-the-different-averages-of-alcohol-so-it-makes-sense-these-would-have-this-correlation." class="section level5">
 <h5>This plot maps the correlation of different numeric variables in the joined dataset. This visually reconfirms that year added to the transplant list negatively correlates with the average alcohol consumption for that year. The positively correlated variables are grouped in the right corner because this is all the different averages of alcohol, so it makes sense these would have this correlation.</h5>
@@ -378,8 +354,6 @@ melted_cormap %&gt;% ggplot(aes(x=Var1, y=Var2, fill=value)) +
   prcomp()
 
 summary(join_pca, loadings=T)</code></pre>
-<pre><code>## Warning: In summary.prcomp(join_pca, loadings = T) :
-##  extra argument &#39;loadings&#39; will be disregarded</code></pre>
 <pre><code>## Importance of components:
 ##                           PC1    PC2    PC3     PC4
 ## Standard deviation     1.3677 1.0952 0.8777 0.39944
@@ -390,7 +364,7 @@ summary(join_pca, loadings=T)</code></pre>
   ggplot(aes(PC2,PC3,col=Event)) + geom_point() +
   scale_color_manual(values = c(&quot;lightblue4&quot;, &quot;lightblue&quot;, 
                                 &quot;lightpink&quot;, &quot;maroon&quot;))</code></pre>
-<p><img src="/Project1_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-13-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
 <div id="i-chose-to-base-my-principal-component-analysis-off-the-four-components-year-average-futime-or-time-on-waiting-list-until-event-average-alcohol-consumption-for-the-year-and-count.-the-summary-of-the-pc-variables-shows-the-variablity-of-the-data.-i-decided-to-base-my-plot-on-average-alcohol-consumption-and-average-waiting-time-on-the-transplant-list.-average-alcohol-consumption-could-separate-liver-transplant-and-censored-events.-average-waiting-time-on-the-list-separated-withdraw-and-death-from-liver-transplant-and-censored." class="section level5">
 <h5>I chose to base my principal component analysis off the four components year, average “futime” (or time on waiting list until event), average alcohol consumption for the year, and count. The summary of the PC variables shows the variablity of the data. I decided to base my plot on average alcohol consumption and average waiting time on the transplant list. Average alcohol consumption could separate liver transplant and censored events. Average waiting time on the list separated withdraw and death from liver transplant and censored.</h5>

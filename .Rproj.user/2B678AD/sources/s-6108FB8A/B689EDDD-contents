@@ -29,7 +29,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project1/</guid>
-      <description>library(dplyr) ## ## Attaching package: &amp;#39;dplyr&amp;#39; ## The following objects are masked from &amp;#39;package:stats&amp;#39;: ## ## filter, lag ## The following objects are masked from &amp;#39;package:base&amp;#39;: ## ## intersect, setdiff, setequal, union library(tidyverse) ## ── Attaching packages ──────────────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.1.3 ✓ stringr 1.4.0 ## ✓ tidyr 1.0.0 ✓ forcats 0.4.0 ## ✓ readr 1.3.1 ## Warning: package &amp;#39;readr&amp;#39; was built under R version 3.</description>
+      <description>library(dplyr) library(tidyverse) Introduction The two datasets I have choosen contain data on the liver transplant waiting list and average alcohol consumption in the country. The liver transplant list contains the variables age, sex, blood type, year, futime , and event that are associated with each person on the transplant list. Year was the year at which they were put onto the waiting list. “Futime” describes the amount of days passed on the waiting list until “event” happened.</description>
     </item>
     
     <item>
@@ -38,7 +38,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/project2/</guid>
-      <description>INTRODUCTION The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The hours variable represents how many hours the wife works annually. The income variable represents the household income, not including what is made by the wife, in hundreds of dollars. The age variable is the age of the wife. The education variable indicates how many years of education the wife recieved.</description>
+      <description>Introduction The dataset I have chosen contains data around female labor supply. There are 13 variables which hold 3382 observations from individuals in the year 1987. The hours variable represents how many hours the wife works annually. The income variable represents the household income, not including what is made by the wife, in hundreds of dollars. The age variable is the age of the wife. The education variable indicates how many years of education the wife recieved.</description>
     </item>
     
   </channel>

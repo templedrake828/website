@@ -1,6 +1,10 @@
 {
-    "path" : "~/Desktop/website/themes/hugo-sustain/layouts",
+    "path" : "~/Desktop/website/content",
     "sortOrder" : [
+        {
+            "ascending" : false,
+            "columnIndex" : 3
+        },
         {
             "ascending" : true,
             "columnIndex" : 2
