@@ -5,13 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2801178655",
+    "hash" : "0",
     "id" : "B689EDDD",
-    "lastKnownWriteTime" : 1576462863,
-    "last_content_update" : 1576462863,
+    "lastKnownWriteTime" : 1576464731,
+    "last_content_update" : 1576464731,
     "path" : "~/Desktop/website/public/index.xml",
     "project_path" : "public/index.xml",
     "properties" : {
+        "cursorPosition" : "0,0",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
