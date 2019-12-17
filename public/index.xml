@@ -6,10 +6,21 @@
     <description>Recent content on Temple Davies</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Sun, 02 Oct 2016 22:55:05 -0400</lastBuildDate>
+    <lastBuildDate>Sun, 15 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Using Python with R Markdown</title>
+      <link>/blog/blog-post/</link>
+      <pubDate>Sun, 15 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/blog-post/</guid>
+      <description>This post shows how the package reticulate can be utilized in an R Markdown to converse to python. This example uses matrices and their properties to explore differnt characteristics of python.
+First, a randamized matrix is made in a r code block.
+set.seed(123) matrix &amp;lt;- matrix(round(13 * rexp(200)), 10) This matrix variable can be called in a python code block and converted to an array. Numpy can also imported so it’s functions can be used on the array.</description>
+    </item>
     
     <item>
       <title>Projects</title>

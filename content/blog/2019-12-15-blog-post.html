@@ -1,0 +1,61 @@
+---
+title: "Using Python with R Markdown"
+author: "Temple Davies"
+date: '2019-12-15'
+output: pdf_document
+description: ''
+slug: blog-post
+tags: []
+categories: []
+---
+
+
+
+<p>This post shows how the package <em>reticulate</em> can be utilized in an R Markdown to converse to python. This example uses matrices and their properties to explore differnt characteristics of python.</p>
+<p>First, a randamized matrix is made in a r code block.</p>
+<pre class="r"><code>set.seed(123)
+matrix &lt;- matrix(round(13 * rexp(200)), 10)</code></pre>
+<p>This matrix variable can be called in a python code block and converted to an array. Numpy can also imported so it’s functions can be used on the array.</p>
+<pre class="python"><code>import numpy as np
+array = r.matrix
+print(array)</code></pre>
+<pre><code>## [[ 11.  13.  11.  28.   5.   1.  13.  21.   7.   0.   6.   2.   3.   3.
+##     9.   2.  14.  19.   7.   9.]
+##  [  7.   6.  13.   7.  94.   4.   4.  21.   3.  14.   3.  13.  23.   6.
+##    21.  20.  14.  17.  57.  21.]
+##  [ 17.   4.  19.   3.  11.  14.  20.  33.  58.   4.  15.   4.  23.   5.
+##     8.   1.  49.  19.   7.   1.]
+##  [  0.   5.  18.  34.   3.   4.   1.  20.  24.  15.   1.  17.  11.  45.
+##     1.   7.   0.  28.   6.   5.]
+##  [  1.   2.  15.  16.  14.  13.   1.   5.   9.  14.   5.   4.   5.  17.
+##     4.  23.   0.  19.   3.  36.]
+##  [  4.  11.  21.  10.  29.  25.   1.   3.  19.   1.  12.  21.  43.  14.
+##    23.  17.  22.  11.   9.  37.]
+##  [  4.  20.  19.   8.  18.   7.   4.   6.  23.   6.   5.   2.   5.   4.
+##     3.  17.   7.  35.  13.   0.]
+##  [  2.   6.  20.  16.   7.  34.   4.   1.  16.  20.  10.  23.  14.   1.
+##    12.   6.   6.  29.  10.   6.]
+##  [ 35.   8.   0.   8.  35.  14.  13.   4.  19.   3.   2.   0.  17.  38.
+##     6.   0.   1.   7.  14.   9.]
+##  [  0.  53.   8.  15.  17.  13.  12.   8.  20.  24.  11.  17.   8.  26.
+##    17.   2.   7.   1.   8.  12.]]</code></pre>
+<pre class="python"><code>mean = np.mean(array)
+print(&quot;Using numpy, it is found that the mean of the array is %.2f.&quot; % mean)</code></pre>
+<pre><code>## Using numpy, it is found that the mean of the array is 13.06.</code></pre>
+<pre class="python"><code>std = np.std(array)
+print(&quot;The standard deviation is determined to be %.2f&quot; % std)</code></pre>
+<pre><code>## The standard deviation is determined to be 12.57</code></pre>
+<pre class="r"><code>median(py$array)</code></pre>
+<pre><code>## [1] 10</code></pre>
+<p>The python variable <em>array</em> can be called in the r code block to determine that the median is 10.</p>
+<p>Arrays are considered to be 2-D lists in python. Lists have a unique feature, called <strong>indexing</strong>, which allows elements in the list to be accessed. When indexing, the first element is considered “0”, the second “1”, and so on like as follows:</p>
+<p><img src="/Users/templedavies/Desktop/website/static/img/index.png" /></p>
+<p>List slicing uses indexing to access multiple elements in the list. For a list being cut using the code <em>my_list[4:7]</em>, the following occurs:</p>
+<p><img src="/Users/templedavies/Desktop/website/static/img/slice.png" /></p>
+<p>Therefore, the array’s elemets can be accessed using indexing and slicing.</p>
+<pre class="python"><code>array[5][3:9]</code></pre>
+<pre><code>## array([ 10.,  29.,  25.,   1.,   3.,  19.])</code></pre>
+<p>By using the index operations above on the array, the 6th row from the array is retrieved. Within that row, the 4th through 9th element are then returned.</p>
+<pre class="python"><code>array[8].sum()</code></pre>
+<pre><code>## 233.0</code></pre>
+<p>The sum of the 9th row is 233.0.</p>
