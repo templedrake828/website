@@ -2,7 +2,9 @@
 title: "Using Python with R Markdown"
 author: "Temple Davies"
 date: '2019-12-15'
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 description: ''
 slug: blog-post
 tags: []
@@ -59,3 +61,22 @@ print(&quot;The standard deviation is determined to be %.2f&quot; % std)</code><
 <pre class="python"><code>array[8].sum()</code></pre>
 <pre><code>## 233.0</code></pre>
 <p>The sum of the 9th row is 233.0.</p>
+<p>The array can be converted into a string to utilize the <em>re</em> module.</p>
+<pre class="python"><code>import re
+
+str_array = []
+for row in array:
+  for element in row:
+    str_array.append(str(element))
+    
+string1 = &quot; &quot;.join(str_array)
+
+two_digit = re.findall(r&quot;\d\d\.\d&quot;, string1)</code></pre>
+<p>Using the function re.findall(), all two-digit numbers can be found.</p>
+<pre class="python"><code>nums = []
+for element in two_digit:
+  nums.append(int(element[0:2]))
+  
+sum(nums)</code></pre>
+<pre><code>## 2201</code></pre>
+<p>The sum of all two digit numbers in the array is 2201.</p>

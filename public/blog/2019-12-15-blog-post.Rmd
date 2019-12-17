@@ -2,7 +2,9 @@
 title: "Using Python with R Markdown"
 author: "Temple Davies"
 date: '2019-12-15'
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 description: ''
 slug: blog-post
 tags: []
@@ -69,3 +71,30 @@ array[8].sum()
 ```
 
 The sum of the 9th row is 233.0.
+
+The array can be converted into a string to utilize the *re* module.
+
+```{python}
+import re
+
+str_array = []
+for row in array:
+  for element in row:
+    str_array.append(str(element))
+    
+string1 = " ".join(str_array)
+
+two_digit = re.findall(r"\d\d\.\d", string1)
+```
+
+Using the function re.findall(), all two-digit numbers can be found.
+
+```{python}
+nums = []
+for element in two_digit:
+  nums.append(int(element[0:2]))
+  
+sum(nums)
+```
+
+The sum of all two digit numbers in the array is 2201.
