@@ -54,9 +54,7 @@ Arrays are considered to be 2-D lists in python. Lists have a unique feature, ca
 
 ![](~/Desktop/website/static/img/index.png)
 
-List slicing uses indexing to access multiple elements in the list. For a list being cut using the code *my_list[4:7]*, the following occurs:
-
-![](~/Desktop/website/static/img/slice.png)
+List slicing uses indexing to access multiple elements in the list. The list is sliced from the start element to the end element minus one.
 
 Therefore, the array's elemets can be accessed using indexing and slicing.
 
